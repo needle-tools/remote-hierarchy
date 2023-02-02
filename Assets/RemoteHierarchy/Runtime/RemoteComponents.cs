@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -48,6 +49,7 @@ namespace Needle.RemoteHierarchy
                 // EditorGUILayout.BeginFoldoutHeaderGroup(true, new GUIContent(c.name, tex));
 
                 var rect = EditorGUILayout.GetControlRect();
+                var originalRect = rect;
                 rect.width = 22;
                 var h = rect.height;
                 rect.height = 16;
@@ -60,9 +62,14 @@ namespace Needle.RemoteHierarchy
                 rect.x += rect.width;
                 rect.width = 300;
                 EditorGUI.LabelField(rect, c.name, EditorStyles.boldLabel);
-                
-                // if (c is RemoteHierarchy.BehaviourInfo behaviourInfo)
-                //     EditorGUILayout.ToggleLeft("Enabled", behaviourInfo.enabled);
+
+                originalRect.xMin = originalRect.xMax - 22;
+                if (GUI.Button(originalRect, "", "PaneOptions"))
+                {
+                    var menu = new GenericMenu();
+                    menu.AddItem(new GUIContent("Open Script", tex), false, OpenScriptForComponent, c);
+                    menu.ShowAsContext();
+                }
 
                 EditorGUI.indentLevel += 3;
                 switch (c)
@@ -147,7 +154,23 @@ namespace Needle.RemoteHierarchy
                 EditorGUI.indentLevel -= 3;
             }            
         }
-        
+
+        private void OpenScriptForComponent(object userdata)
+        {
+            var c = userdata as RemoteHierarchy.ComponentInfo;
+            if (c == null) return;
+            if (typeof(MonoBehaviour).IsAssignableFrom(c.type))
+            {
+                var tempGo = new GameObject("TempComponentHolder");
+                tempGo.hideFlags = HideFlags.HideAndDontSave;
+                var component = tempGo.AddComponent(c.type) as MonoBehaviour;
+                var script = MonoScript.FromMonoBehaviour(component);
+                if (!script) return;
+                if (Application.isPlaying) Destroy(tempGo); else DestroyImmediate(tempGo);
+                AssetDatabase.OpenAsset(script);
+            }
+        }
+
         private static Dictionary<(Type, MethodInfo, string), string> stringParameterCache = new Dictionary<(Type, MethodInfo, string), string>();
     }
 #endif

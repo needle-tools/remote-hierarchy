@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Networking.PlayerConnection;
 using UnityEngine.SceneManagement;
+
+// Make sure this assembly is always linked when making debug builds.
+#if DEBUG
+[assembly: UnityEngine.Scripting.AlwaysLinkAssembly]
+#endif
 
 namespace Needle.RemoteHierarchy
 {
@@ -223,8 +229,11 @@ namespace Needle.RemoteHierarchy
             public string name;
             public int instanceId;
             public bool active;
+            [CanBeNull]
             public TransformInfo transform;
+            [CanBeNull]
             public List<ComponentInfo> components;
+            [CanBeNull]
             public List<GameObjectInfo> children;
 
             public static GameObjectInfo FromGameObject(GameObject go, bool captureComponents)

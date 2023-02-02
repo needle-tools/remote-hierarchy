@@ -233,9 +233,12 @@ namespace Needle.RemoteHierarchy
                     var newGo = new GameObject(gameObjectInfo.name);
                     instanceIdsToGameObjects[gameObjectInfo] = newGo;
                     newGo.transform.SetParent(parent);
-                    newGo.transform.localPosition = gameObjectInfo.transform.position;
-                    newGo.transform.localRotation = gameObjectInfo.transform.rotation;
-                    newGo.transform.localScale = gameObjectInfo.transform.scale;
+                    if (gameObjectInfo.transform != null)
+                    {
+                        newGo.transform.localPosition = gameObjectInfo.transform.position;
+                        newGo.transform.localRotation = gameObjectInfo.transform.rotation;
+                        newGo.transform.localScale = gameObjectInfo.transform.scale;
+                    }
                     newGo.SetActive(gameObjectInfo.active);
 
                     if (gameObjectInfo.components != null && gameObjectInfo.components.Count > 0)
