@@ -90,26 +90,28 @@ namespace Needle.RemoteHierarchy
             {
                 EditorConnection.instance.Send(RemoteHierarchy.kSendRequestEditorToPlayer, Encoding.UTF8.GetBytes("Hello from Editor"));
             }
-
-            if (GUILayout.Button("Request Hierarchy"))
-            {
-                EditorConnection.instance.Send(RemoteHierarchy.kSendRequestEditorToPlayer, Encoding.UTF8.GetBytes(RemoteHierarchy.HierarchyRequest));
-            }
             
-            if (GUILayout.Button("Request Hierarchy (with components)"))
+            EditorGUI.BeginDisabledGroup(!EditorConnection.instance.ConnectedPlayers.Any());
+            if (GUILayout.Button(new GUIContent("Show Hierarchy Snapshot", "Send hierarchy information from the Player to the Editor and display it as preview stage.\nRequires an active EditorConnection, select a target in the dropdown above.")))
             {
                 EditorConnection.instance.Send(RemoteHierarchy.kSendRequestEditorToPlayer, Encoding.UTF8.GetBytes(RemoteHierarchy.HierarchyWithComponentsRequest));
             }
-
-            if (ShowDevButtons && GUILayout.Button("Test Request Hierarchy"))
+            
+            if (ShowDevButtons && GUILayout.Button("Show Hierarchy Snapshot (without components)"))
             {
-                var hierarchy = RemoteHierarchy.GetHierarchy(false);
+                EditorConnection.instance.Send(RemoteHierarchy.kSendRequestEditorToPlayer, Encoding.UTF8.GetBytes(RemoteHierarchy.HierarchyRequest));
+            }
+            EditorGUI.EndDisabledGroup();
+
+            if (ShowDevButtons && GUILayout.Button("(Local) Show Hierarchy Snapshot"))
+            {
+                var hierarchy = RemoteHierarchy.GetHierarchy(true);
                 ShowHierarchyData(hierarchy, UpdateLocally, CallMethodLocally);
             }
             
-            if (ShowDevButtons && GUILayout.Button("Test Request Hierarchy (with components)"))
+            if (ShowDevButtons && GUILayout.Button("(Local) Show Hierarchy Snapshot (without components)"))
             {
-                var hierarchy = RemoteHierarchy.GetHierarchy(true);
+                var hierarchy = RemoteHierarchy.GetHierarchy(false);
                 ShowHierarchyData(hierarchy, UpdateLocally, CallMethodLocally);
             }
         }

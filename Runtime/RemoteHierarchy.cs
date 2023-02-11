@@ -1,5 +1,8 @@
+// #define REMOTE_HIERARCHY_LOGS
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -7,6 +10,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Networking.PlayerConnection;
 using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 
 // Make sure this assembly is always linked when making debug builds.
 #if DEBUG
@@ -44,14 +48,6 @@ namespace Needle.RemoteHierarchy
             
             Log("Have registered RemoteHierarchy callbacks");
         }
-
-        // TODO how to properly tear down after RuntimeInitializeOnLoadMethod?
-        // private static void OnDestroy()
-        // {
-        //     PlayerConnection.instance.Unregister(kSendRequestEditorToPlayer, OnRequest);
-        //     PlayerConnection.instance.Unregister(kUpdateScene, OnChangeSet);
-        //     PlayerConnection.instance.Unregister(kCallMethods, OnCallMethods);
-        // }
 
         private static void OnConnectionEvent(int playerId)
         {
@@ -294,11 +290,7 @@ namespace Needle.RemoteHierarchy
             return hierarchy;
         }
 
-        private static void OnSendToEditor()
-        {
-            PlayerConnection.instance.Send(kMsgSendPlayerToEditor, Encoding.UTF8.GetBytes("Hello from Player"));
-        }
-
+        [Conditional("REMOTE_HIERARCHY_LOGS")]
         private static void Log(string log)
         {
             Debug.Log($"[{nameof(RemoteHierarchy)}] {log}");
