@@ -64,7 +64,10 @@ namespace Needle.RemoteHierarchy
                 EditorGUI.LabelField(rect, c.name, EditorStyles.boldLabel);
 
                 originalRect.xMin = originalRect.xMax - 22;
-                if (GUI.Button(originalRect, "", "PaneOptions"))
+                
+                // draw context menu button - currently we only have that one option,
+                // so we're hiding the option to open the script for types that are not MonoBehaviours
+                if (typeof(MonoBehaviour).IsAssignableFrom(c.type) && GUI.Button(originalRect, "", "PaneOptions"))
                 {
                     var menu = new GenericMenu();
                     menu.AddItem(new GUIContent("Open Script", tex), false, OpenScriptForComponent, c);
