@@ -180,6 +180,9 @@ namespace Needle.RemoteHierarchy
 
             public static ComponentInfo FromComponent(Component c)
             {
+                if (!c)
+                    return null;
+                
                 return c switch
                 {
                     MeshFilter _ => new MeshFilterInfo(c),
@@ -243,7 +246,7 @@ namespace Needle.RemoteHierarchy
                 };
                 
                 if (captureComponents)
-                    info.components = go.GetComponents(typeof(Component)).Where(x => !(x is Transform)).Select(ComponentInfo.FromComponent).ToList();
+                    info.components = go.GetComponents(typeof(Component)).Where(x => !(x is Transform) && !x).Select(ComponentInfo.FromComponent).ToList();
                 
                 instanceIdMap.Add(info.instanceId, (info, go));
 
